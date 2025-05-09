@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="
+               http://www.springframework.org/schema/beans
+               http://www.springframework.org/schema/beans/spring-beans.xsd
+               http://www.springframework.org/schema/security
+               http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <!-- Enable Spring Security -->
+    <http auto-config="true" use-expressions="true" create-session="stateless"
+          entry-point-ref="unauthorizedEntryPoint">
+
+        <!-- Role-based access -->
+        <intercept-url pattern="/api/admin/**" access="hasRole('ADMIN')"/>
+        <intercept-url pattern="/api/client/**" access="hasRole('CLIENT')"/>
+        <intercept-url pattern="/api/employee/**" access="hasRole('EMPLOYEE')"/>
+
+        <!-- Allow login and register -->
+        <intercept-url pattern="/api/auth/login" access="permitAll"/>
+        <intercept-url pattern="/api/auth/register" access="permitAll"/>
+
+        <csrf disabled="true"/>
+<!--        <session-management session-creation-policy="stateless"/>-->
+
+        <!-- Custom JWT filter before the UsernamePasswordAuthenticationFilter -->
+        <custom-filter ref="jwtFilter" position="PRE_AUTH_FILTER"/>
+    </http>
+
+    <!-- Beans -->
+<!--    <beans:bean id="customUserDetailsService" class="com.example.service.CustomUserDetailsService"/>-->
+    <beans:bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
+    <!-- JWT Filter -->
+    <beans:bean id="jwtFilter" class="org.latifah.securelogin.filter.JwtFilter"/>
+
+    <!-- Unauthorized Entry Point -->
+    <beans:bean id="unauthorizedEntryPoint" class="org.latifah.securelogin.config.RestAuthenticationEntryPoint"/>
+</beans:beans>
