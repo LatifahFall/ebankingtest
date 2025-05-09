@@ -8,14 +8,16 @@
         http://www.springframework.org/schema/security
         http://www.springframework.org/schema/security/spring-security.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-    <security:http auto-config="false" use-expressions="true" entry-point-ref="restAuthenticationEntryPoint">
-        <security:custom-filter ref="jwtAuthenticationFilter" position="PRE_AUTH_FILTER"/>
-        <security:intercept-url pattern="/login" access="permitAll"/>
-        <security:intercept-url pattern="/admin/**" access="hasRole('ADMIN')"/>
-        <security:intercept-url pattern="/client/**" access="hasRole('CLIENT')"/>
-        <security:intercept-url pattern="/employee/**" access="hasRole('EMPLOYEE')"/>
-        <security:logout logout-url="/logout" />
-    </security:http>
+<!--    <security:http auto-config="false" use-expressions="true" entry-point-ref="restAuthenticationEntryPoint">-->
+<!--        <security:custom-filter ref="jwtAuthenticationFilter" position="PRE_AUTH_FILTER"/>-->
+<!--        <security:intercept-url pattern="/login" access="permitAll"/>-->
+<!--        <security:intercept-url pattern="/admin/**" access="hasRole('ADMIN')"/>-->
+<!--        <security:intercept-url pattern="/client/**" access="hasRole('CLIENT')"/>-->
+<!--        <security:intercept-url pattern="/employee/**" access="hasRole('EMPLOYEE')"/>-->
+<!--        &lt;!&ndash; Default catch-all pattern that requires authentication &ndash;&gt;-->
+<!--        <security:intercept-url pattern="/**" access="isAuthenticated()"/>-->
+<!--        <security:logout logout-url="/logout" />-->
+<!--    </security:http>-->
 
     <bean id="restAuthenticationEntryPoint" class="org.latifah.securelogin.config.RestAuthenticationEntryPoint"/>
     <bean id="jwtAuthenticationFilter" class="org.latifah.securelogin.filter.JwtFilter"/>
@@ -28,6 +30,8 @@
                 <security:user name="employee" password="{noop}employee123" authorities="ROLE_EMPLOYEE"/>
             </security:user-service>
         </security:authentication-provider>
+
+
     </security:authentication-manager>
 
     <!-- Enable Spring MVC -->

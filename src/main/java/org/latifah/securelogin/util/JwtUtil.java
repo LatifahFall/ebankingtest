@@ -4,10 +4,11 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 
 import javax.crypto.SecretKey;
+import java.security.Key;
 import java.util.Date;
 
 public class JwtUtil {
-    private final String SECRET_KEY = "secret";
+    private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);  // This creates a secure 256-bit key
 
     public String generateToken(String username, String role) {
         return Jwts.builder()
@@ -15,14 +16,14 @@ public class JwtUtil {
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .signWith(key)
                 .compact();
     }
 
     // Extract the username from the JWT token
     public String extractUsername(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(SECRET_KEY)
+                .setSigningKey(key)
                 .build() // Build the parser
                 .parseSignedClaims(token) // Parse the signed claims
                 .getPayload(); // Get the payload (claims) from the token
@@ -32,7 +33,7 @@ public class JwtUtil {
     // Extract the role from the JWT token
     public String extractRole(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(SECRET_KEY)
+                .setSigningKey(key)
                 .build() // Build the parser
                 .parseSignedClaims(token) // Parse the signed claims
                 .getPayload(); // Get the payload (claims) from the token
@@ -42,7 +43,7 @@ public class JwtUtil {
     // Check if the token is valid
     public boolean isTokenValid(String token) {
         try {
-            Jwts.parser().setSigningKey(SECRET_KEY).build().parseSignedClaims(token);
+            Jwts.parser().setSigningKey(key).build().parseSignedClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
